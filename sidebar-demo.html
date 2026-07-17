@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPOSTEL - Sidebar Glassmorphism</title>
+  <style>
+    /* ============================================
+       VARIABLES
+       ============================================ */
+    :root {
+      --vinotinto: #800020;
+      --vinotinto-dark: #5c0e1a;
+      --vinotinto-deep: #3d0912;
+      --vinotinto-hover: #a0002a;
+
+      --glass-bg: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.15);
+      --glass-blur: 12px;
+
+      --sidebar-collapsed: 70px;
+      --sidebar-expanded: 250px;
+      --sidebar-top: 24px;
+      --sidebar-bottom: 24px;
+      --sidebar-left: 20px;
+      --sidebar-radius: 28px;
+
+      --item-inactive: rgba(255, 255, 255, 0.65);
+      --item-hover-bg: rgba(255, 255, 255, 0.92);
+      --item-active-bg: #ffffff;
+
+      --transition-speed: 0.3s;
+      --transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ============================================
+       DEMO BACKGROUND
+       ============================================ */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #3d0912 0%, #800020 35%, #5c0e1a 70%, #2a0610 100%);
+      background-attachment: fixed;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Demo content to show sidebar floats */
+    .demo-content {
+      margin-left: calc(var(--sidebar-collapsed) + var(--sidebar-left) * 2 + 20px);
+      padding: 60px 40px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+    }
+
+    .demo-content h1 {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 28px;
+      font-weight: 300;
+      margin-bottom: 12px;
+    }
+
+    .demo-content p {
+      line-height: 1.7;
+      max-width: 520px;
+    }
+
+    /* ============================================
+       SIDEBAR CONTAINER
+       ============================================ */
+    .sidebar {
+      position: fixed;
+      top: var(--sidebar-top);
+      left: var(--sidebar-left);
+      bottom: var(--sidebar-bottom);
+      width: var(--sidebar-collapsed);
+      z-index: 9999;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 0;
+      gap: 6px;
+
+      border-radius: var(--sidebar-radius);
+      background: var(--glass-bg);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      border: 1px solid var(--glass-border);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+      transition:
+        width var(--transition-speed) var(--transition-ease),
+        padding var(--transition-speed) var(--transition-ease);
+      overflow: hidden;
+    }
+
+    .sidebar:hover,
+    .sidebar.expanded {
+      width: var(--sidebar-expanded);
+      padding: 20px 12px;
+      align-items: stretch;
+    }
+
+    /* ============================================
+       LOGO
+       ============================================ */
+    .sidebar__logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+      margin-bottom: 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transition: background var(--transition-speed) var(--transition-ease);
+    }
+
+    .sidebar:hover .sidebar__logo,
+    .sidebar.expanded .sidebar__logo {
+      width: 100%;
+      height: 42px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.12);
+      justify-content: flex-start;
+      padding: 0 14px;
+      gap: 10px;
+    }
+
+    .sidebar__logo svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .sidebar__logo-text {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: #fff;
+      white-space: nowrap;
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      transition: opacity 0.2s ease 0.05s, width 0.2s ease;
+    }
+
+    .sidebar:hover .sidebar__logo-text,
+    .sidebar.expanded .sidebar__logo-text {
+      opacity: 1;
+      width: auto;
+    }
+
+    /* ============================================
+       SEPARATOR
+       ============================================ */
+    .sidebar__sep {
+      width: 28px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.12);
+      margin: 4px 0;
+      flex-shrink: 0;
+      transition: width var(--transition-speed) var(--transition-ease),
+                  margin var(--transition-speed) var(--transition-ease);
+    }
+
+    .sidebar:hover .sidebar__sep,
+    .sidebar.expanded .sidebar__sep {
+      width: 100%;
+      margin: 6px 0;
+    }
+
+    /* ============================================
+       NAV ITEMS
+       ============================================ */
+    .sidebar__nav {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .sidebar__link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      height: 44px;
+      min-height: 44px;
+      padding: 0;
+      border-radius: 14px;
+      color: var(--item-inactive);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+
+      /* Center icon when collapsed */
+      justify-content: center;
+      padding: 0;
+
+      transition:
+        background var(--transition-speed) var(--transition-ease),
+        color var(--transition-speed) var(--transition-ease),
+        padding var(--transition-speed) var(--transition-ease),
+        height var(--transition-speed) var(--transition-ease);
+    }
+
+    .sidebar:hover .sidebar__link,
+    .sidebar.expanded .sidebar__link {
+      justify-content: flex-start;
+      padding: 0 14px;
+    }
+
+    .sidebar__link-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .sidebar__link-icon svg {
+      width: 20px;
+      height: 20px;
+      transition: color var(--transition-speed) var(--transition-ease);
+    }
+
+    .sidebar__link-text {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      transition: opacity 0.2s ease, width 0.2s ease;
+    }
+
+    .sidebar:hover .sidebar__link-text,
+    .sidebar.expanded .sidebar__link-text {
+      opacity: 1;
+      width: auto;
+    }
+
+    /* Delay text appearance per item */
+    .sidebar:hover .sidebar__link:nth-child(1) .sidebar__link-text,
+    .sidebar.expanded .sidebar__link:nth-child(1) .sidebar__link-text { transition-delay: 0.03s; }
+    .sidebar:hover .sidebar__link:nth-child(2) .sidebar__link-text,
+    .sidebar.expanded .sidebar__link:nth-child(2) .sidebar__link-text { transition-delay: 0.06s; }
+    .sidebar:hover .sidebar__link:nth-child(3) .sidebar__link-text,
+    .sidebar.expanded .sidebar__link:nth-child(3) .sidebar__link-text { transition-delay: 0.09s; }
+    .sidebar:hover .sidebar__link:nth-child(4) .sidebar__link-text,
+    .sidebar.expanded .sidebar__link:nth-child(4) .sidebar__link-text { transition-delay: 0.12s; }
+    .sidebar:hover .sidebar__link:nth-child(5) .sidebar__link-text,
+    .sidebar.expanded .sidebar__link:nth-child(5) .sidebar__link-text { transition-delay: 0.15s; }
+    .sidebar:hover .sidebar__link:nth-child(6) .sidebar__link-text,
+    .sidebar.expanded .sidebar__link:nth-child(6) .sidebar__link-text { transition-delay: 0.18s; }
+    .sidebar:hover .sidebar__link:nth-child(7) .sidebar__link-text,
+    .sidebar.expanded .sidebar__link:nth-child(7) .sidebar__link-text { transition-delay: 0.21s; }
+
+    /* Tooltip for collapsed state */
+    .sidebar__link-tooltip {
+      position: absolute;
+      left: calc(100% + 14px);
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 100;
+    }
+
+    .sidebar__link-tooltip::before {
+      content: '';
+      position: absolute;
+      left: -4px;
+      top: 50%;
+      transform: translateY(-50%) rotate(45deg);
+      width: 8px;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .sidebar:not(:hover):not(.expanded) .sidebar__link:hover .sidebar__link-tooltip {
+      opacity: 1;
+    }
+
+    /* ============================================
+       HOVER STATE
+       ============================================ */
+    .sidebar__link:hover {
+      background: var(--item-hover-bg);
+      color: var(--vinotinto-dark);
+    }
+
+    .sidebar__link:hover .sidebar__link-icon svg {
+      color: var(--vinotinto);
+    }
+
+    /* ============================================
+       ACTIVE STATE (capsule)
+       ============================================ */
+    .sidebar__link.active {
+      background: var(--item-active-bg);
+      color: var(--vinotinto-dark);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .sidebar__link.active .sidebar__link-icon svg {
+      color: var(--vinotinto);
+    }
+
+    .sidebar__link.active:hover {
+      background: #fff;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Active indicator dot (collapsed) */
+    .sidebar__link.active::after {
+      content: '';
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--vinotinto);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .sidebar:not(:hover):not(.expanded) .sidebar__link.active::after {
+      opacity: 1;
+    }
+
+    /* ============================================
+       BOTTOM BUTTON
+       ============================================ */
+    .sidebar__bottom {
+      margin-top: auto;
+      padding-top: 8px;
+    }
+
+    .sidebar__toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--item-inactive);
+      cursor: pointer;
+      transition: all var(--transition-speed) var(--transition-ease);
+    }
+
+    .sidebar:hover .sidebar__toggle,
+    .sidebar.expanded .sidebar__toggle {
+      width: 100%;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      justify-content: flex-start;
+      padding: 0 14px;
+      gap: 10px;
+    }
+
+    .sidebar__toggle svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      transition: transform 0.3s var(--transition-ease);
+    }
+
+    .sidebar.expanded .sidebar__toggle svg {
+      transform: rotate(180deg);
+    }
+
+    .sidebar__toggle-text {
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      transition: opacity 0.2s ease, width 0.2s ease;
+    }
+
+    .sidebar:hover .sidebar__toggle-text,
+    .sidebar.expanded .sidebar__toggle-text {
+      opacity: 1;
+      width: auto;
+    }
+
+    .sidebar__toggle:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================
+       SIDEBAR
+       ============================================ -->
+  <nav class="sidebar" id="sidebar">
+
+    <!-- Logo -->
+    <div class="sidebar__logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 20A7 7 0 0 1 9.8 6.9C15.5 4.9 17 3.5 19 1c1 2 2 4.5 2 8 0 5.5-4.78 11-10 11Z"/>
+        <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+      </svg>
+      <span class="sidebar__logo-text">IPOSTEL</span>
+    </div>
+
+    <div class="sidebar__sep"></div>
+
+    <!-- Navigation -->
+    <div class="sidebar__nav">
+
+      <!-- Inicio -->
+      <a href="#" class="sidebar__link" data-tooltip="Inicio">
+        <span class="sidebar__link-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/>
+            <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          </svg>
+        </span>
+        <span class="sidebar__link-text">Inicio</span>
+        <span class="sidebar__link-tooltip">Inicio</span>
+      </a>
+
+      <!-- Institución -->
+      <a href="#" class="sidebar__link" data-tooltip="Institución">
+        <span class="sidebar__link-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="2" width="16" height="20" rx="2"/>
+            <path d="M9 22v-4h6v4"/>
+            <path d="M8 6h.01"/><path d="M16 6h.01"/>
+            <path d="M8 10h.01"/><path d="M16 10h.01"/>
+            <path d="M8 14h.01"/><path d="M16 14h.01"/>
+          </svg>
+        </span>
+        <span class="sidebar__link-text">Institución</span>
+        <span class="sidebar__link-tooltip">Institución</span>
+      </a>
+
+      <!-- Servicios (active) -->
+      <a href="#" class="sidebar__link active" data-tooltip="Servicios">
+        <span class="sidebar__link-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m7.5 4.27 9 5.15"/>
+            <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+            <path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>
+          </svg>
+        </span>
+        <span class="sidebar__link-text">Servicios</span>
+        <span class="sidebar__link-tooltip">Servicios</span>
+      </a>
+
+      <!-- Regulación -->
+      <a href="#" class="sidebar__link" data-tooltip="Regulación">
+        <span class="sidebar__link-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3 2 12h3v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8h3L12 3Z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </span>
+        <span class="sidebar__link-text">Regulación</span>
+        <span class="sidebar__link-tooltip">Regulación</span>
+      </a>
+
+      <!-- Acción Postal -->
+      <a href="#" class="sidebar__link" data-tooltip="Acción Postal">
+        <span class="sidebar__link-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"/>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+          </svg>
+        </span>
+        <span class="sidebar__link-text">Acción Postal</span>
+        <span class="sidebar__link-tooltip">Acción Postal</span>
+      </a>
+
+      <!-- En Línea -->
+      <a href="#" class="sidebar__link" data-tooltip="En Línea">
+        <span class="sidebar__link-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+            <path d="M2 12h20"/>
+          </svg>
+        </span>
+        <span class="sidebar__link-text">En Línea</span>
+        <span class="sidebar__link-tooltip">En Línea</span>
+      </a>
+
+      <!-- Noticias -->
+      <a href="#" class="sidebar__link" data-tooltip="Noticias">
+        <span class="sidebar__link-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
+            <path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/>
+          </svg>
+        </span>
+        <span class="sidebar__link-text">Noticias</span>
+        <span class="sidebar__link-tooltip">Noticias</span>
+      </a>
+
+    </div>
+
+    <!-- Toggle button -->
+    <div class="sidebar__bottom">
+      <div class="sidebar__sep"></div>
+      <button class="sidebar__toggle" id="sidebarToggle" title="Expandir / Colapsar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+        </svg>
+        <span class="sidebar__toggle-text">Menú</span>
+      </button>
+    </div>
+
+  </nav>
+
+  <!-- Demo content -->
+  <div class="demo-content">
+    <h1>IPOSTEL — Sidebar Glassmorphism</h1>
+    <p>
+      Pasa el cursor sobre la barra lateral para expandirla.
+      Haz clic en "Menú" para fijar el estado expandido.
+      El elemento <strong>Servicios</strong> viene activo por defecto.
+    </p>
+  </div>
+
+  <!-- ============================================
+       SCRIPT
+       ============================================ -->
+  <script>
+    (() => {
+      const sidebar = document.getElementById('sidebar');
+      const toggle = document.getElementById('sidebarToggle');
+      const links = document.querySelectorAll('.sidebar__link');
+
+      // Toggle expanded state with button
+      let pinned = false;
+
+      toggle.addEventListener('click', () => {
+        pinned = !pinned;
+        sidebar.classList.toggle('expanded', pinned);
+      });
+
+      // Active link management
+      links.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          links.forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+        });
+      });
+
+      // Collapse on mouse leave only if not pinned
+      sidebar.addEventListener('mouseleave', () => {
+        if (!pinned) {
+          sidebar.classList.remove('expanded');
+        }
+      });
+
+      // Expand on mouse enter
+      sidebar.addEventListener('mouseenter', () => {
+        if (!pinned) {
+          sidebar.classList.add('expanded');
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>

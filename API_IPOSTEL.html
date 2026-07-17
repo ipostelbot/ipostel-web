@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API de IPOSTEL</title>
+    <style>
+        :root {
+            --primary-color: #6B1820;
+            --primary-hover: #4d1117;
+            --bg-color: #f8f9fa;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0; padding: 20px;
+            display: flex; justify-content: center;
+        }
+
+        .container {
+            width: 100%; max-width: 850px;
+            background: var(--white);
+            padding: 40px; border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        header { text-align: center; border-bottom: 3px solid var(--primary-color); margin-bottom: 30px; padding-bottom: 15px; }
+
+        .form-section { margin-bottom: 20px; }
+        label { display: block; font-weight: 700; margin-bottom: 8px; color: #555; }
+        
+        input, select {
+            width: 100%; padding: 14px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px; font-size: 1rem;
+        }
+
+        button {
+            width: 100%; background-color: var(--primary-color);
+            color: white; padding: 16px; border: none;
+            border-radius: 10px; font-size: 1rem; font-weight: bold;
+            cursor: pointer; text-transform: uppercase; transition: 0.3s;
+        }
+
+        button:hover { background-color: var(--primary-hover); }
+
+        .tabla-resultados {
+            width: 100%; border-collapse: collapse; margin-bottom: 30px;
+            border-radius: 8px; overflow: hidden; border: 1px solid #eee;
+        }
+        .tabla-resultados td { padding: 12px 15px; border-bottom: 1px solid #eee; }
+        .campo-nombre { font-weight: bold; color: var(--primary-color); background: #fffcfc; width: 35%; }
+
+        .timeline-title {
+            color: var(--primary-color); border-left: 5px solid var(--primary-color);
+            padding-left: 15px; margin: 40px 0 20px 0; font-size: 1.4rem;
+        }
+
+        .timeline { position: relative; padding: 10px 0; list-style: none; }
+        .timeline::before {
+            content: ''; position: absolute; top: 0; bottom: 0;
+            width: 3px; background: #e1e1e1; left: 20px;
+        }
+
+        .timeline-item { position: relative; margin-bottom: 30px; padding-left: 50px; }
+        .timeline-item::after {
+            content: ''; position: absolute; width: 14px; height: 14px;
+            background: var(--white); border: 3px solid var(--primary-color);
+            border-radius: 50%; left: 12px; top: 5px; z-index: 1;
+        }
+
+        .timeline-content {
+            background: #fff; padding: 18px; border-radius: 10px;
+            border: 1px solid #eee; border-left: 4px solid var(--primary-color);
+        }
+
+        .timeline-date { font-weight: bold; color: #777; font-size: 0.85rem; display: block; margin-bottom: 8px; }
+        
+        .timeline-office { 
+            color: var(--primary-color); 
+            font-size: 1.1rem; font-weight: 800; 
+            display: block; margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .status-badge { 
+            font-size: 0.9rem; font-weight: 600; 
+            padding: 5px 12px; border-radius: 15px;
+            display: inline-block;
+        }
+        .status-procesado { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; } 
+        .status-en-proceso { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .status-default { background: #e2e3e5; color: #383d41; }
+
+        .error-box { padding: 20px; background: #fff5f5; color: #c53030; border-radius: 10px; border: 1px solid #feb2b2; text-align: center; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <img src="iposplus_pequeno.png" alt="IPOSPLUS" style="max-width: 100%; height: auto;">
+    </header>
+    <div class="form-section">
+        <label>Tipo de Búsqueda</label>
+        <select id="selector" onchange="alternarCampos()">
+            <option value="envio">Número de Guía</option>
+        </select>
+    </div>
+
+    <div id="grupo-envio" class="form-section">
+        <label>Código de Envío</label>
+        <input type="text" id="input-codigo" placeholder="Introduce tu tracking">
+    </div>
+
+    <div id="grupo-cedula" class="form-section" style="display:none;">
+        <label>Rol del Cliente</label>
+        <select id="input-tipo-persona" style="margin-bottom: 10px;">
+            <option value="remitente">Remitente</option>
+            <option value="destinatario">Destinatario</option>
+        </select>
+        <input type="text" id="input-cedula" placeholder="Número de Cédula">
+    </div>
+
+    <button onclick="ejecutarConsulta()">RASTREAR ENVÍO</button>
+
+    <div id="resultado"></div>
+</div>
+
+<script>
+    const CONFIG = {
+        key: '3rud1c10n*2025',
+        urlEnvio: 'http://sispven.ipostel.gob.ve/api/envios',
+        urlCedula: 'http://sispven.ipostel.gob.ve/api/envios/buscar'
+    };
+
+    function alternarCampos() {
+        const modo = document.getElementById('selector').value;
+        document.getElementById('grupo-envio').style.display = modo === 'envio' ? 'block' : 'none';
+        document.getElementById('grupo-cedula').style.display = modo === 'cedula' ? 'block' : 'none';
+    }
+
+    async function ejecutarConsulta() {
+        const resDiv = document.getElementById('resultado');
+        resDiv.innerHTML = '<p style="text-align:center;">Consultando sistema...</p>';
+        
+        const modo = document.getElementById('selector').value;
+        const endpoint = modo === 'envio' ? CONFIG.urlEnvio : CONFIG.urlCedula;
+        const payload = modo === 'envio' 
+            ? { codigo: document.getElementById('input-codigo').value }
+            : { tipo: document.getElementById('input-tipo-persona').value, cedula: document.getElementById('input-cedula').value };
+
+        try {
+            const respuesta = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-API-KEY': CONFIG.key
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const datos = await respuesta.json();
+            if (respuesta.ok) {
+                renderizarDetalle(datos);
+            } else {
+                manejarError(respuesta.status);
+            }
+        } catch (error) {
+            resDiv.innerHTML = `<div class="error-box">Error de conexión con el servidor.</div>`;
+        }
+    }
+
+    function manejarError(status) {
+        const resDiv = document.getElementById('resultado');
+        if (status === 401) resDiv.innerHTML = `<div class="error-box">401: No autorizado. Revise la API KEY.</div>`;
+        else if (status === 404) resDiv.innerHTML = `<div class="error-box">404: No se encontró el registro.</div>`;
+        else if (status === 422) resDiv.innerHTML = `<div class="error-box">422: Parámetros obligatorios faltantes.</div>`;
+        else resDiv.innerHTML = `<div class="error-box">Error al procesar la solicitud (${status}).</div>`;
+    }
+
+    function renderizarDetalle(datos) {
+        let html = '';
+        const { encaminamientos, ...generales } = datos;
+
+        html += `<h2 class="timeline-title">Detalles del Paquete</h2>`;
+        html += `<table class="tabla-resultados"><tbody>`;
+        for (const [key, val] of Object.entries(generales)) {
+            if (typeof val !== 'object') {
+                html += `<tr><td class="campo-nombre">${key.replace(/_/g, ' ').toUpperCase()}</td><td>${val || '---'}</td></tr>`;
+            }
+        }
+        html += `</tbody></table>`;
+
+        if (encaminamientos && Array.isArray(encaminamientos)) {
+            html += `<h2 class="timeline-title">Historial de Movimientos</h2>`;
+            html += `<div class="timeline">`;
+            
+            encaminamientos.forEach(paso => {
+                const nombreOficina = paso.oficina || "OFICINA CENTRAL";
+                const oficinaExterna = paso.oficina_externa ? ` ➡️ ${paso.oficina_externa}` : "";
+                
+                // Leemos el campo "estatus" del JSON proporcionado
+                const estatusOriginal = paso.estatus || "Sin estatus";
+                const estatusLower = estatusOriginal.toLowerCase();
+                
+                let claseEstado = "status-en-proceso";
+
+                // Lógica de precisión: "salida" o "procesado" marcan éxito (verde)
+                if (estatusLower.includes("procesado") || estatusLower.includes("salida") || estatusLower.includes("entregado")) {
+                    claseEstado = "status-procesado";
+                }
+
+                html += `
+                    <li class="timeline-item">
+                        <div class="timeline-content">
+                            <span class="timeline-date">${paso.fecha || 'Fecha no disponible'}</span>
+                            <span class="timeline-office">📍 ${nombreOficina}${oficinaExterna}</span>
+                            <div class="status-badge ${claseEstado}">
+                                ${estatusOriginal}
+                            </div>
+                        </div>
+                    </li>`;
+            });
+            html += `</div>`;
+        }
+        document.getElementById('resultado').innerHTML = html;
+    }
+</script>
+</body>
+</html>
