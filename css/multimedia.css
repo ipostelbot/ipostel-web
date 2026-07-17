@@ -1,5 +1,7 @@
 /* ============================================
    MULTIMEDIA SECTION - Formal, Elegante
+   Inspiración: LODISNA (video premium),
+   FedEx (sección multimedia)
    ============================================ */
 
 .multimedia {
@@ -13,17 +15,37 @@
   align-items: start;
 }
 
-/* Video principal */
+/* ============================================
+   VIDEO PRINCIPAL
+   ============================================ */
+
 .multimedia__featured {
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   overflow: hidden;
-  background: linear-gradient(135deg, #5a0016, var(--primary));
+  background: linear-gradient(135deg, #4A1018 0%, var(--primary) 50%, #8B2E3C 100%);
   aspect-ratio: 16 / 9;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.multimedia__featured:hover {
+  transform: scale(1.02);
+  box-shadow: 0 24px 60px rgba(107, 29, 42, 0.2);
+}
+
+/* Patrón decorativo */
+.multimedia__featured::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 30% 70%, rgba(255,255,255,0.08) 0%, transparent 40%),
+    radial-gradient(circle at 70% 30%, rgba(255,255,255,0.05) 0%, transparent 40%);
+  pointer-events: none;
 }
 
 .multimedia__featured-placeholder {
@@ -33,6 +55,8 @@
   gap: var(--space-4);
   color: #ffffff;
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .multimedia__featured-placeholder svg {
@@ -46,31 +70,61 @@
   opacity: 0.6;
 }
 
+/* ============================================
+   PLAY BUTTON - Premium
+   ============================================ */
+
 .multimedia__play-btn {
-  width: 72px;
-  height: 72px;
-  background-color: var(--teal);
+  width: 80px;
+  height: 80px;
+  background: var(--primary-gradient);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   position: absolute;
-  transition: transform var(--transition-fast), background-color var(--transition-fast);
+  transition: all var(--transition-base);
+  box-shadow: 0 8px 32px rgba(107, 29, 42, 0.4);
+  z-index: 2;
 }
 
 .multimedia__featured:hover .multimedia__play-btn {
-  transform: scale(1.1);
-  background-color: var(--teal-dark);
+  transform: scale(1.12);
+  box-shadow: 0 12px 40px rgba(107, 29, 42, 0.5);
+}
+
+/* Anillo animado */
+.multimedia__play-btn::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  animation: playPulse 2s ease-in-out infinite;
+}
+
+@keyframes playPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0;
+  }
 }
 
 .multimedia__play-btn svg {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   color: #ffffff;
-  margin-left: 3px;
+  margin-left: 4px;
 }
 
-/* Lista de videos */
+/* ============================================
+   LISTA DE VIDEOS
+   ============================================ */
+
 .multimedia__list {
   display: flex;
   flex-direction: column;
@@ -79,34 +133,59 @@
 
 .multimedia__list-title {
   font-family: var(--font-heading);
-  font-size: var(--text-lg);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
   color: var(--teal);
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 2px solid var(--teal-light);
 }
+
+/* ============================================
+   VIDEO ITEM
+   ============================================ */
 
 .video-item {
   display: flex;
   gap: var(--space-4);
-  padding: var(--space-3);
+  padding: var(--space-4);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background-color var(--transition-fast);
+  transition: all var(--transition-fast);
   text-decoration: none;
+  border: 1px solid transparent;
 }
 
 .video-item:hover {
   background-color: var(--teal-light);
+  border-color: rgba(18, 111, 113, 0.1);
 }
 
 .video-item__thumb {
   width: 120px;
   height: 68px;
   flex-shrink: 0;
-  background-color: var(--teal-light);
+  background: linear-gradient(135deg, var(--teal-light) 0%, rgba(18, 111, 113, 0.15) 100%);
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Play icon overlay */
+.video-item__thumb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(18, 111, 113, 0.1);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.video-item:hover .video-item__thumb::after {
+  opacity: 1;
 }
 
 .video-item__thumb svg {
@@ -114,6 +193,14 @@
   height: 24px;
   color: var(--teal);
   opacity: 0.5;
+  transition: all var(--transition-fast);
+  position: relative;
+  z-index: 1;
+}
+
+.video-item:hover .video-item__thumb svg {
+  opacity: 0.8;
+  transform: scale(1.1);
 }
 
 .video-item__info {
@@ -123,13 +210,18 @@
 
 .video-item__title {
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   color: var(--text-primary);
   margin-bottom: var(--space-1);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  transition: color var(--transition-fast);
+}
+
+.video-item:hover .video-item__title {
+  color: var(--teal);
 }
 
 .video-item__duration {

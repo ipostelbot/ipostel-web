@@ -1,5 +1,6 @@
 /* ============================================
    NEWS SECTION - Elegante, Formal
+   Inspiración: LODISNA, IndoSpace
    ============================================ */
 
 .news {
@@ -12,27 +13,36 @@
   gap: var(--space-6);
 }
 
+/* ============================================
+   NEWS CARD - Premium design
+   ============================================ */
+
 .news-card {
   background-color: var(--bg-white);
   border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid var(--border);
-  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  transition: all var(--transition-base);
   cursor: pointer;
   display: flex;
   flex-direction: column;
   text-decoration: none;
+  position: relative;
 }
 
 .news-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-hover);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
 }
+
+/* ============================================
+   NEWS CARD IMAGE
+   ============================================ */
 
 .news-card__image {
   width: 100%;
   height: 200px;
-  background-color: var(--teal-light);
+  background: linear-gradient(135deg, var(--teal-light) 0%, rgba(18, 111, 113, 0.15) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -40,12 +50,33 @@
   overflow: hidden;
 }
 
+/* Patrón decorativo en imagen */
+.news-card__image::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23126F71' fill-opacity='0.06'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2l2 3-2 3z'/%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
 .news-card__image svg {
   width: 48px;
   height: 48px;
   color: var(--teal);
   opacity: 0.35;
+  transition: all var(--transition-base);
+  position: relative;
+  z-index: 1;
 }
+
+.news-card:hover .news-card__image svg {
+  opacity: 0.6;
+  transform: scale(1.1);
+}
+
+/* ============================================
+   NEWS CARD BODY
+   ============================================ */
 
 .news-card__body {
   padding: var(--space-6);
@@ -66,7 +97,7 @@
   align-items: center;
   padding: var(--space-1) var(--space-3);
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   border-radius: var(--radius-full);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -86,6 +117,11 @@
   margin-bottom: var(--space-3);
   line-height: var(--leading-tight);
   flex: 1;
+  transition: color var(--transition-fast);
+}
+
+.news-card:hover .news-card__title {
+  color: var(--primary);
 }
 
 .news-card__excerpt {
@@ -93,6 +129,10 @@
   color: var(--text-secondary);
   line-height: var(--leading-relaxed);
 }
+
+/* ============================================
+   NEWS CARD FOOTER
+   ============================================ */
 
 .news-card__footer {
   padding: 0 var(--space-6) var(--space-6);
@@ -103,18 +143,24 @@
   align-items: center;
   gap: var(--space-2);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   color: var(--primary);
-  transition: gap var(--transition-fast);
+  transition: gap var(--transition-fast), color var(--transition-fast);
 }
 
 .news-card__link:hover {
   gap: var(--space-3);
+  color: var(--teal);
 }
 
 .news-card__link svg {
   width: 16px;
   height: 16px;
+  transition: transform var(--transition-fast);
+}
+
+.news-card:hover .news-card__link svg {
+  transform: translateX(4px);
 }
 
 /* ============================================

@@ -1,5 +1,6 @@
 /* ============================================
    SERVICES - Elegante, Formal
+   Inspiración: FedEx, TransGlobal, MRW
    ============================================ */
 
 /* ============================================
@@ -25,15 +26,33 @@
   padding: var(--space-2) var(--space-5);
   color: rgba(255, 255, 255, 0.9);
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   border-radius: var(--radius-sm);
   transition: background-color var(--transition-fast), color var(--transition-fast);
   white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.strip-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background-color: var(--accent-gold);
+  transition: width var(--transition-base), left var(--transition-base);
 }
 
 .strip-item:hover {
   background-color: rgba(255, 255, 255, 0.12);
   color: #ffffff;
+}
+
+.strip-item:hover::after {
+  width: 60%;
+  left: 20%;
 }
 
 .strip-item svg {
@@ -55,49 +74,91 @@
   gap: var(--space-6);
 }
 
+/* ============================================
+   SERVICE CARD - Premium hover effects
+   Inspiración: FedEx (cards con iconos), LODISNA
+   ============================================ */
+
 .service-card {
   background-color: var(--bg-white);
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   padding: var(--space-8) var(--space-6);
   text-align: center;
-  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+  transition: all var(--transition-base);
   cursor: pointer;
   display: block;
   text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Gradiente sutil en hover */
+.service-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(18, 111, 113, 0.03) 100%);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.service-card:hover::before {
+  opacity: 1;
 }
 
 .service-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-hover);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px rgba(18, 111, 113, 0.12);
   border-color: var(--teal);
 }
 
+/* Línea superior animada */
+.service-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background: var(--primary-gradient);
+  transition: width var(--transition-base);
+}
+
+.service-card:hover::after {
+  width: 100%;
+}
+
 .service-card__icon {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: var(--teal-light);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   margin: 0 auto var(--space-5);
-  transition: background-color var(--transition-fast);
+  transition: all var(--transition-base);
+  position: relative;
+  z-index: 1;
 }
 
 .service-card:hover .service-card__icon {
   background-color: var(--teal);
+  transform: scale(1.08);
+  box-shadow: 0 8px 24px rgba(18, 111, 113, 0.25);
 }
 
 .service-card__icon svg {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   color: var(--teal);
-  transition: color var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .service-card:hover .service-card__icon svg {
   color: #ffffff;
+  transform: scale(1.05);
 }
 
 .service-card__title {
@@ -105,12 +166,21 @@
   font-size: var(--text-lg);
   color: var(--teal);
   margin-bottom: var(--space-3);
+  transition: color var(--transition-fast);
+  position: relative;
+  z-index: 1;
+}
+
+.service-card:hover .service-card__title {
+  color: var(--primary);
 }
 
 .service-card__text {
   font-size: var(--text-sm);
   color: var(--text-secondary);
   line-height: var(--leading-relaxed);
+  position: relative;
+  z-index: 1;
 }
 
 /* ============================================
