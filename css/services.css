@@ -1,0 +1,137 @@
+/* ============================================
+   SERVICES - Elegante, Formal
+   ============================================ */
+
+/* ============================================
+   SERVICES STRIP (Barra rapida - Vinotinto)
+   ============================================ */
+
+.services-strip {
+  background-color: var(--primary);
+  padding: var(--space-4) 0;
+}
+
+.services-strip .container {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}
+
+.strip-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-5);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.strip-item:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.strip-item svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ============================================
+   SERVICES GRID
+   ============================================ */
+
+.services {
+  background-color: var(--bg-page);
+}
+
+.services__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+}
+
+.service-card {
+  background-color: var(--bg-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  padding: var(--space-8) var(--space-6);
+  text-align: center;
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+  cursor: pointer;
+  display: block;
+  text-decoration: none;
+}
+
+.service-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--teal);
+}
+
+.service-card__icon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--teal-light);
+  border-radius: var(--radius-md);
+  margin: 0 auto var(--space-5);
+  transition: background-color var(--transition-fast);
+}
+
+.service-card:hover .service-card__icon {
+  background-color: var(--teal);
+}
+
+.service-card__icon svg {
+  width: 28px;
+  height: 28px;
+  color: var(--teal);
+  transition: color var(--transition-fast);
+}
+
+.service-card:hover .service-card__icon svg {
+  color: #ffffff;
+}
+
+.service-card__title {
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  color: var(--teal);
+  margin-bottom: var(--space-3);
+}
+
+.service-card__text {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .services__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .services__grid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .strip-item:nth-child(n+5) {
+    display: none;
+  }
+}

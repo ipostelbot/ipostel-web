@@ -1,0 +1,78 @@
+/* ============================================
+   INFO BAND - Vinotinto oscuro con stats
+   ============================================ */
+
+.info-band {
+  background: linear-gradient(135deg, #5a0016 0%, var(--primary) 100%);
+  padding: var(--space-20) 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.info-band::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 10% 80%, rgba(255,255,255,0.04) 0%, transparent 40%),
+    radial-gradient(circle at 90% 20%, rgba(255,255,255,0.03) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.info-band .container {
+  position: relative;
+  z-index: 1;
+}
+
+.info-band__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-8);
+  text-align: center;
+}
+
+.info-stat {
+  padding: var(--space-4);
+}
+
+.info-stat__number {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+  margin-bottom: var(--space-2);
+}
+
+.info-stat__label {
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.75);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+.info-stat__divider {
+  width: 40px;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.25);
+  margin: var(--space-3) auto 0;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .info-band__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+  }
+}
+
+@media (max-width: 480px) {
+  .info-band__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+}
