@@ -1,4 +1,40 @@
 /* ============================================
+   TOP HEADER FIJO
+   Modifica --header-width y --header-height
+   para cambiar el tamaño de la barra
+   ============================================ */
+:root {
+  --header-width: 100%;
+  --header-height: auto;
+}
+
+.top-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--header-width);
+  height: var(--header-height);
+  z-index: 10000;
+  background: #000;
+  line-height: 0;
+  overflow: hidden;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.top-header__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.top-header.hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+/* ============================================
    SIDEBAR GLASSMORPHISM
    ============================================ */
 
@@ -6,7 +42,7 @@
 :root {
   --sidebar-collapsed: 70px;
   --sidebar-expanded: 250px;
-  --sidebar-top: 90px;
+  --sidebar-top: 54px;
   --sidebar-bottom: 24px;
   --sidebar-left: 20px;
   --sidebar-radius: 28px;

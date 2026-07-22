@@ -23,6 +23,13 @@
 <body>
 
 <!-- ============================================
+     HEADER FIJO
+     ============================================ -->
+<header class="top-header">
+  <img src="header01.jpg" alt="IPOSTEL Header" class="top-header__img">
+</header>
+
+<!-- ============================================
      SIDEBAR GLASSMORPHISM
      ============================================ -->
 <nav class="sidebar" id="sidebar">
@@ -661,6 +668,16 @@
 <script src="js/sidebar.js"></script>
 <script src="js/animations.js"></script>
 <script src="js/tracking.js"></script>
+<script>
+  requestAnimationFrame(() => {
+    const h = document.querySelector('.top-header');
+    if (h) document.documentElement.style.setProperty('--sidebar-top', h.offsetHeight + 14 + 'px');
+  });
+  window.addEventListener('scroll', () => {
+    const h = document.querySelector('.top-header');
+    if (h) h.classList.toggle('hidden', window.scrollY > 50);
+  }, { passive: true });
+</script>
 
 </body>
 </html>
